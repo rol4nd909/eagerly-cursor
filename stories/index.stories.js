@@ -4,16 +4,14 @@ export default {};
 
 export const EagerlyCursor = () => `
     <style>
-        // * {
-        //     cursor: none;
-        // }
+        * {
+            cursor: none;
+        }
 
         .eagerly-crsr {
-            --eagerly-crsr-inner-size: 1rem;
-            --eagerly-crsr-outer-size: 1.5rem;
             --eagerly-crsr-clr: 220 100% 71%;
+            --eagerly-crsr-clr-active: 330 100% 71%;
         }
-        
     </style>
 
     <eagerly-cursor class="eagerly-crsr" linkElements="btn"></eagerly-cursor>
