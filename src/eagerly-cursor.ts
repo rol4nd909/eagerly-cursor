@@ -3,13 +3,10 @@ import { customElement, property } from 'lit/decorators.js'
 
 @customElement('eagerly-cursor')
 export class EagerlyCursor extends LitElement {
-  @property({type: Number}) xPos = 0;
-  @property({type: Number}) yPos = 0;
   @property({type: String}) linkElements = '';
-  @property({type: String}) bounce = "bounce";
-  @property({type: String}) inactive = "inactive";
+  @property({type: String}) active = "is-active";
+  @property({type: String}) inactive = "is-inactive";
   @property({type: Array}) links = null;
-  @property({type: Element}) crsr = null;
 
   constructor() {
     super()
@@ -29,24 +26,25 @@ export class EagerlyCursor extends LitElement {
   
   disconnectedCallback() {
     window.removeEventListener('mousemove', this._followMouse);
-
-    if(this.linkElements) {
-      this.links = document.querySelectorAll('.'+this.linkElements);
-
-      this.links.forEach((link: { removeEventListener: (arg: string,arg1: () => void) => Element; }) => link.removeEventListener('mouseover', this._disableAnimation));
-      this.links.forEach((link: { removeEventListener: (arg: string,arg1: () => void) => Element; }) => link.removeEventListener('mouseleave', this._disableAnimation));
-    }
+    
+    this.links.forEach((link: { removeEventListener: (arg: string,arg1: () => void) => Element; }) => link.removeEventListener('mouseover', this._disableAnimation));
+    this.links.forEach((link: { removeEventListener: (arg: string,arg1: () => void) => Element; }) => link.removeEventListener('mouseleave', this._disableAnimation));
 
     super.disconnectedCallback();
   }
 
   static styles = css`
     :host {
-      --eagerly-crsr-inner-size: 1.5rem;
-      --eagerly-crsr-outer-size: 2rem;
-      --eagerly-crsr-offset: calc((var(--eagerly-crsr-outer-size) - var(--eagerly-crsr-inner-size)) / 2);
+      --eagerly-crsr-inner-size: 1rem;
+      --eagerly-crsr-outer-size: 1.5rem;
       --eagerly-crsr-radius: 50%;
       --eagerly-crsr-clr: 330 100% 71%;
+      --eagerly-crsr-clr-active: 330 100% 71%;
+      --eagerly-crsr-duration: 0.2s;
+
+
+      --offset: calc((var(--eagerly-crsr-outer-size) - var(--eagerly-crsr-inner-size)) / 2);
+      --center-pos: (var(--eagerly-crsr-outer-size) / 2);
     }
 
     .crsr {
@@ -57,20 +55,15 @@ export class EagerlyCursor extends LitElement {
       pointer-events: none;
     }
 
-
-    .crsr-inner.inactive {
-      --eagerly-crsr-clr: 330 100% 71%;
-    }
-
     .crsr-inner {
-      top: calc((var(--eagerly-crsr-outer-size) - var(--eagerly-crsr-offset)) * -1);
-      left: calc((var(--eagerly-crsr-outer-size) - var(--eagerly-crsr-offset)) * -1);
+      top: calc((var(--eagerly-crsr-outer-size) - var(--offset)) * -1);
+      left: calc((var(--eagerly-crsr-outer-size) - var(--offset)) * -1);
       width: var(--eagerly-crsr-inner-size);
       height: var(--eagerly-crsr-inner-size);
 
       background-color: hsl(var(--eagerly-crsr-clr) / 50%);
 
-      transition: transform 0.2s ease;
+      transform: translate(calc(var(--pos-x) + var(--center-pos)),calc(var(--pos-y) + var(--center-pos)));
     }
 
     .crsr-outer {
@@ -80,32 +73,43 @@ export class EagerlyCursor extends LitElement {
       height: var(--eagerly-crsr-outer-size);
 
       border: 2px solid hsl(var(--eagerly-crsr-clr));
+
+      transform: translate(calc(var(--pos-x) + var(--center-pos)),calc(var(--pos-y) + var(--center-pos))) scale(1);
+      transition: transform 0.2s ease;
+    }
+
+    .is-active {
+      --eagerly-crsr-clr: var(--eagerly-crsr-clr-active)
     }
   `
 
   private _followMouse = (e: any) => {
-    this.xPos = e.pageX;
-    this.yPos = e.pageY;
+    let xPos = e.clientX;
+    let yPos = e.clientY;
+
+    this.setAttribute('style', `--pos-y: ${yPos}px; --pos-x: ${xPos}px;`)
   }
 
   private _disableAnimation = () => {
-    this.crsr = this.shadowRoot.querySelector('.crsr-inner');
+    const crsrItems = this.shadowRoot.querySelectorAll('.crsr');
 
-    const hasBounceClass = this.crsr.classList.contains(this.bounce);
+    crsrItems.forEach(crsr => {
+      const hasBounceClass = crsr.classList.contains(this.active);
 
-    if (hasBounceClass) {
-      this.crsr.classList.add(this.inactive);
-      this.crsr.classList.remove(this.bounce);
-    } else {
-      this.crsr.classList.add(this.bounce);
-      this.crsr.classList.remove(this.inactive);
-    }
+      if (hasBounceClass) {
+        crsr.classList.add(this.inactive);
+        crsr.classList.remove(this.active);
+      } else {
+        crsr.classList.add(this.active);
+        crsr.classList.remove(this.inactive);
+      }
+    });
   }
 
   render() {
     return html`
-      <div class="crsr  crsr-outer" style="transform: translate(calc(${this.xPos}px + (var(--eagerly-crsr-outer-size) / 2)),calc(${this.yPos}px + (var(--eagerly-crsr-outer-size) / 2)))"></div>
-      <div class="crsr  crsr-inner  bounce" style="transform: translate(calc(${this.xPos}px + (var(--eagerly-crsr-outer-size) / 2)),calc(${this.yPos}px + (var(--eagerly-crsr-outer-size) / 2)))"></div>
+      <div class="crsr  crsr-outer"></div>
+      <div class="crsr  crsr-inner"></div>
     `
   }
 }
