@@ -1,0 +1,12 @@
+{
+  "name": "@wcd/rol4nd909.eagerly-cursor",
+  "version": "2.0.0",
+  "description": "",
+  "license": "ISC",
+  "type": "module",
+  "homepage": "{{ homepage }}",
+  "scripts": {
+    "serve": "npx wcd-cli@latest serve 5vhtWenvJtD39qL5YnPi --open"
+  },
+  "dependencies": {}
+}

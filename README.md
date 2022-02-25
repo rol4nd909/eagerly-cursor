@@ -1,2 +1,16 @@
-# eagerly-cursor
-A web component based on Lit TS that creates a custom cursor
+# Custom Cursor Component
+
+## usage 
+
+**properties:**
+- 
+
+**styling:**
+- 
+
+
+```html
+<script type="module" src="/index.js"></script>
+
+<eagerly-cursor />
+```
