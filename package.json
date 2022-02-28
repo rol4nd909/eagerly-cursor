@@ -7,7 +7,7 @@
   "homepage": "{{ homepage }}",
   "scripts": {
     "serve": "npx wcd-cli@latest serve 5vhtWenvJtD39qL5YnPi --open",
-    "pr": "npx wcd-cli@latest link LM3YmrkIugQ8xwGXjz5o03uTOUZ2/eagerly-cursor --branch pr:2@rol4nd909"
+    "link": "npx wcd-cli@latest link LM3YmrkIugQ8xwGXjz5o03uTOUZ2/eagerly-cursor --branch pr:2@rol4nd909"
   },
   "dependencies": {}
 }
