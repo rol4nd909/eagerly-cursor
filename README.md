@@ -10,7 +10,8 @@ npm install @wcd/rol4nd909.eagerly-cursor
 **properties:**
 - linkElements
 
-you can give a classname of items to watch
+you can give a classname of items to watch please add the ```.``` with the classname,
+also you could use a data attribute like ```[data-crsr='true']```
 
 **styling:**
 - --eagerly-crsr-inner-size
@@ -30,4 +31,8 @@ import "@wcd/rol4nd909.eagerly-slider";
 
 ```html
 <eagerly-cursor></eagerly-cursor>
+
+<eagerly-cursor linkElements=".custom-crsr"></eagerly-cursor>
+
+<eagerly-cursor linkElements="[data-crsr='true']"></eagerly-cursor>
 ```

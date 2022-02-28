@@ -5,8 +5,7 @@ import { customElement, property } from 'lit/decorators.js'
 export class EagerlyCursor extends LitElement {
   @property({type: String}) linkElements = '';
   @property({type: String}) active = "is-active";
-  @property({type: String}) inactive = "is-inactive";
-  @property({type: Array}) links = null;
+  @property({type: Array}) links:NodeListOf<HTMLElement> = null;
 
   constructor() {
     super()
@@ -17,18 +16,18 @@ export class EagerlyCursor extends LitElement {
     window.addEventListener('mousemove', (this._followMouse));
 
     if(this.linkElements) {
-      this.links = document.querySelectorAll('.'+this.linkElements);
+      this.links = document.querySelectorAll(this.linkElements);
 
-      this.links.forEach((link: { addEventListener: (arg: string,arg1: () => void) => Element; }) => link.addEventListener('mouseover', this._disableAnimation));
-      this.links.forEach((link: { addEventListener: (arg: string,arg1: () => void) => Element; }) => link.addEventListener('mouseleave', this._disableAnimation));
+      this.links.forEach((link) => link.addEventListener('mouseover', this._disableAnimation));
+      this.links.forEach((link) => link.addEventListener('mouseleave', this._disableAnimation));
     }
   }
   
   disconnectedCallback() {
     window.removeEventListener('mousemove', this._followMouse);
     
-    this.links.forEach((link: { removeEventListener: (arg: string,arg1: () => void) => Element; }) => link.removeEventListener('mouseover', this._disableAnimation));
-    this.links.forEach((link: { removeEventListener: (arg: string,arg1: () => void) => Element; }) => link.removeEventListener('mouseleave', this._disableAnimation));
+    this.links.forEach((link) => link.removeEventListener('mouseover', this._disableAnimation));
+    this.links.forEach((link) => link.removeEventListener('mouseleave', this._disableAnimation));
 
     super.disconnectedCallback();
   }
@@ -87,7 +86,7 @@ export class EagerlyCursor extends LitElement {
       border: 2px solid currentColor;
       color: var(--eagerly-crsr-clr-outer);
 
-      transform: translate(calc(var(--pos-x) + var(--center-pos)), calc(var(--pos-y) + var(--center-pos))) scale(1);
+      transform: translate(calc(var(--pos-x) + var(--center-pos)), calc(var(--pos-y) + var(--center-pos)));
       transition: transform var(--eagerly-crsr-transform), color var(--eagerly-crsr-clr-transition);
     }
 
@@ -101,21 +100,20 @@ export class EagerlyCursor extends LitElement {
     let xPos = e.clientX;
     let yPos = e.clientY;
 
-    this.setAttribute('style', `--pos-y: ${yPos}px; --pos-x: ${xPos}px;`)
+    this.style.setProperty('--pos-x', `${xPos}px`);
+    this.style.setProperty('--pos-y', `${yPos}px`);
   }
 
   private _disableAnimation = () => {
     const crsrItems = this.shadowRoot.querySelectorAll('.crsr');
 
     crsrItems.forEach(crsr => {
-      const hasBounceClass = crsr.classList.contains(this.active);
+      const isActive = crsr.classList.contains(this.active);
 
-      if (hasBounceClass) {
-        crsr.classList.add(this.inactive);
+      if (isActive) {
         crsr.classList.remove(this.active);
       } else {
         crsr.classList.add(this.active);
-        crsr.classList.remove(this.inactive);
       }
     });
   }
