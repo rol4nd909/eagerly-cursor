@@ -35,13 +35,16 @@ export class EagerlyCursor extends LitElement {
 
   static styles = css`
     :host {
-      --eagerly-crsr-inner-size: 1rem;
+      --eagerly-crsr-inner-size: 0.5rem;
       --eagerly-crsr-outer-size: 1.5rem;
       --eagerly-crsr-radius: 50%;
-      --eagerly-crsr-clr: 330 100% 71%;
-      --eagerly-crsr-clr-active: 330 100% 71%;
-      --eagerly-crsr-duration: 0.2s;
-
+      --eagerly-crsr-clr-inner: hsl(330 100% 71%);
+      --eagerly-crsr-clr-outer: hsl(330 100% 71% / 50%);
+      --eagerly-crsr-clr-inner-active: hsl(220 100% 71%);
+      --eagerly-crsr-clr-outer-active: hsl(220 100% 71%);
+      --eagerly-crsr-clr-transition: 0.25s ease-in-out;
+      --eagerly-crsr-transform: 0.1s ease-out;
+      --eagerly-crsr-scale: scale(1.75);
 
       --offset: calc((var(--eagerly-crsr-outer-size) - var(--eagerly-crsr-inner-size)) / 2);
       --center-pos: (var(--eagerly-crsr-outer-size) / 2);
@@ -51,6 +54,9 @@ export class EagerlyCursor extends LitElement {
       box-sizing: border-box;
       display: block;
       position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
       border-radius: var(--eagerly-crsr-radius);
       pointer-events: none;
     }
@@ -61,9 +67,15 @@ export class EagerlyCursor extends LitElement {
       width: var(--eagerly-crsr-inner-size);
       height: var(--eagerly-crsr-inner-size);
 
-      background-color: hsl(var(--eagerly-crsr-clr) / 50%);
+      background-color: currentColor;
+      color: var(--eagerly-crsr-clr-inner);
 
-      transform: translate(calc(var(--pos-x) + var(--center-pos)),calc(var(--pos-y) + var(--center-pos)));
+      transform: translate(calc(var(--pos-x) + var(--center-pos)), calc(var(--pos-y) + var(--center-pos)));
+      transition: color var(--eagerly-crsr-clr-transition);
+    }
+
+    .crsr-inner.is-active {
+      transform: translate(calc(var(--pos-x) + var(--center-pos)), calc(var(--pos-y) + var(--center-pos))) var(--eagerly-crsr-scale);
     }
 
     .crsr-outer {
@@ -72,14 +84,16 @@ export class EagerlyCursor extends LitElement {
       width: var(--eagerly-crsr-outer-size);
       height: var(--eagerly-crsr-outer-size);
 
-      border: 2px solid hsl(var(--eagerly-crsr-clr));
+      border: 2px solid currentColor;
+      color: var(--eagerly-crsr-clr-outer);
 
-      transform: translate(calc(var(--pos-x) + var(--center-pos)),calc(var(--pos-y) + var(--center-pos))) scale(1);
-      transition: transform 0.2s ease;
+      transform: translate(calc(var(--pos-x) + var(--center-pos)), calc(var(--pos-y) + var(--center-pos))) scale(1);
+      transition: transform var(--eagerly-crsr-transform), color var(--eagerly-crsr-clr-transition);
     }
 
     .is-active {
-      --eagerly-crsr-clr: var(--eagerly-crsr-clr-active)
+      --eagerly-crsr-clr-inner: var(--eagerly-crsr-clr-inner-active);
+      --eagerly-crsr-clr-outer: var(--eagerly-crsr-clr-outer-active);
     }
   `
 
